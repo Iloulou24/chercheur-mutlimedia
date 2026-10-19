@@ -1,8 +1,9 @@
 from sources.youtube import recherche_youtube
 from sources.deezer import recherche_deezer
+from ranking.score import calculer_score
 
 
-def afficher_resultat(resultats):
+def afficher_resultat(resultats, recherche):
     """résultat sous la forme d'un dictionnaire contenant des dictionnaires
     [{titre:... ,chaine:... ,lien:...,source:...},
      {...},
@@ -14,7 +15,7 @@ def afficher_resultat(resultats):
         for resultat in resultats:
             for info in resultat:
                 print(f"{info} : {resultat[info]}")
-            print("\n")
+            print(f"{calculer_score(recherche, resultat)}\n")
 
 
 def rechercher(recherche, nb_resultat):
@@ -23,9 +24,14 @@ def rechercher(recherche, nb_resultat):
     for source in sources:
         resultats = source(recherche, nb_resultat)
         tous_les_resultats.extend(resultats)
-
+    tous_les_resultats.sort(
+        key=lambda resultat: calculer_score(recherche, resultat),
+        reverse=True)
     return tous_les_resultats
 
 
-print(rechercher("python", 3))
-print(len(rechercher("python", 3)))
+recherche = "daft punk , get lucky"
+nb_resultat = 3
+
+afficher_resultat(rechercher(recherche, nb_resultat), recherche)
+print(len(rechercher(recherche, nb_resultat)))
